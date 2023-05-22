@@ -1,0 +1,38 @@
+%h4
+  %a{href: root_path} All Projects
+  %span /
+  %a{href: employees_path} All Employees
+- if @employees.present?
+  %table
+    %tr
+      %h4 Employees List
+    -if @project
+      %tr
+        %h3= "Project Name: #{@project.name}"
+    %tr
+      %td Email
+      %td Assign Projects
+      -if @project
+        %td Remove Employee
+    -@employees.all.each do |e|
+      %tr
+        %td
+          %a{href: root_path(eid: e.id)}= e.email
+        %td= e.projects&.count
+        -if @project
+          %td
+            %button.unassign_employee{value: e.id, 'data-project': @project.id} Unassign Employees
+-else
+  %h4 No Data Found!
+
+
+- content_for :js_code do
+  :javascript
+    $('.unassign_employee').click(function(){
+      eid = $(this).val();
+      pid = $(this).data('project');
+      $.ajax({
+        url: "#{delete_employee_path}", type: "get",
+        data: {'eid': eid, 'pid': pid}
+      });
+    })

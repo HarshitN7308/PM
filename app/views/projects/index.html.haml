@@ -1,0 +1,52 @@
+%h4
+  %a{href: root_path} All Projects
+  %span /
+  %a{href: employees_path} All Employees
+-if @projects.present?
+  .div.project_table
+    %table
+      %tr
+        %h3 Projects List
+      %tr
+        %td Name
+        %td Team Members
+        %td Add Employee
+      -@projects.all.each do |pro|
+        %tr
+          %td
+            %a{href: employees_path(pid: pro.id)}= pro.name
+          %td= pro.employees&.count
+          %td
+            %button.assign_employee{value: pro.id} Assign Employees
+  .div.select_employee{style: 'display: none'}
+    %h3 Select Employee
+    = select_tag 'project_employees[]', options_for_select(@employees.map { |e| [e.email, e.id] }, ''), multiple: true
+    %button.submit_employee Submite
+-else
+  %h4 No Data Found!
+
+- content_for :js_code do
+  :javascript
+    $('.assign_employee').click(function(e){
+      $('.submit_employee').val($(this).val())
+      $('.select_employee').css('display','block');
+      $('.project_table').css('display','none');
+    });
+
+    $('.submit_employee').click(function(){
+      pid = $(this).val();
+      emp_ids = $('#project_employees_').val();
+      $.ajax({
+        url: "#{add_employees_path}", type: "GET",
+        data: {'emp_ids': emp_ids, 'pid': pid}
+      });
+    })
+
+    $('.submit_employee').click(function(){
+      pid = $(this).val();
+      emp_ids = $('#project_employees_').val();
+      $.ajax({
+        url: "#{add_employees_path}", type: "GET",
+        data: {'emp_ids': emp_ids, 'pid': pid}
+      });
+    })
